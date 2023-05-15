@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    build:
+      context: ./requirements/nginx/
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    restart: always
+    volumes:
+      - myvolume:/var/www/html/
+    networks:
+      mynetwork:
+        ipv4_address: 172.0.0.3
+
+  wordpress:
+    image: wordpress
+    container_name: wordpress
+    restart: always
+    build:
+      context: ./requirements/wordpress/
+      dockerfile: Dockerfile
+    networks:
+      mynetwork:
+        ipv4_address: 172.0.0.2
+    volumes:
+      - myvolume:/var/www/html/
+    ports:
+      - "9000:9000"
+
+volumes:
+  myvolume:
+    name: myvolume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ebaraton42/data/
+
+networks:
+  mynetwork:
+    name: mynetwork
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.0.0.0/24
+          gateway: 172.0.0.1
