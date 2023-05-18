@@ -4,9 +4,9 @@ build:
 	@docker build --no-cache -t mariadb .
 
 run:
-	@docker run -it -p 3306:3306 -d --name mariadb mariadb
+	@docker run -it -p 3306:3306 -d --env-file ./.env --name mariadb mariadb
 
-exec:
+exec: 
 	@docker exec -ti mariadb bash
 
 stop:

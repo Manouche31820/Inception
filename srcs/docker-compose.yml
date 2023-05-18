@@ -3,10 +3,8 @@ version: '3'
 services:
   mariadb:
     hostname: mariadb
-    environment:
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=ebaraton
-      - MYSQL_PASSWORD=mdp
+    env_file:
+      - ./.env
     image: mariadb
     container_name: mariadb
     build:
@@ -20,8 +18,6 @@ services:
     networks:
       mynetwork:
         ipv4_address: 172.0.0.4
-    depends_on:
-      - wordpress
 
   nginx:
     image: nginx
@@ -36,8 +32,8 @@ services:
     networks:
       mynetwork:
         ipv4_address: 172.0.0.3
-    # depends_on:
-    #   - wordpress
+    depends_on:
+      - wordpress
 
   wordpress:
     hostname: wordpress
@@ -57,7 +53,7 @@ services:
     volumes:
       - ngwp-volume:/var/www/html/
     depends_on:
-      - nginx
+      - mariadb
 
 volumes:
   ngwp-volume:
@@ -83,3 +79,4 @@ networks:
       config:
         - subnet: 172.0.0.0/24
           gateway: 172.0.0.1
+
