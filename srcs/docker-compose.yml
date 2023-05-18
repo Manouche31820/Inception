@@ -1,0 +1,85 @@
+version: '3'
+
+services:
+  mariadb:
+    hostname: mariadb
+    environment:
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=ebaraton
+      - MYSQL_PASSWORD=mdp
+    image: mariadb
+    container_name: mariadb
+    build:
+      context: ./requirements/mariadb/
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      - mdb-volume:/var/www/html/
+    networks:
+      mynetwork:
+        ipv4_address: 172.0.0.4
+    depends_on:
+      - wordpress
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    build:
+      context: ./requirements/nginx/
+    ports:
+      - "443:443"
+    restart: always
+    volumes:
+      - ngwp-volume:/var/www/html/
+    networks:
+      mynetwork:
+        ipv4_address: 172.0.0.3
+    # depends_on:
+    #   - wordpress
+
+  wordpress:
+    hostname: wordpress
+    environment:
+      - WORDPRESS_DB_HOST=172.0.0.4:3306
+      - WORDPRESS_DB_USER=ebaraton
+      - WORDPRESS_DB_PASSWORD=mdp
+      - WORDPRESS_DB_NAME=wordpress
+    image: wordpress
+    container_name: wordpress
+    restart: always
+    build:
+      context: ./requirements/wordpress/
+    networks:
+      mynetwork:
+        ipv4_address: 172.0.0.2
+    volumes:
+      - ngwp-volume:/var/www/html/
+    depends_on:
+      - nginx
+
+volumes:
+  ngwp-volume:
+    name: ngwp-volume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ebaraton/data/ngwp/
+  mdb-volume:
+    name: mdb-volume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ebaraton/data/mdb/
+
+networks:
+  mynetwork:
+    name: mynetwork
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.0.0.0/24
+          gateway: 172.0.0.1
