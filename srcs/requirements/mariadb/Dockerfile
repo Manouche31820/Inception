@@ -7,12 +7,8 @@ RUN mkdir -p /var/run/mysqld && \
 chown -R mysql:mysql /var/run/mysqld && \
 chmod 777 /var/run/mysqld
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
-COPY ./tools/mariadbinstall.sh /var/local/bin/
-COPY ./tools/mariadbcreation.sh /var/local/bin/
+COPY ./tools/mariadbinstall.sh ./tools/mariadbcreation.sh ./conf/filename.sql /var/local/bin/
 
-RUN chmod +x /var/local/bin/mariadbinstall.sh
+RUN chmod +x /var/local/bin/*
 RUN /var/local/bin/mariadbinstall.sh
-RUN chmod +x /var/local/bin/mariadbcreation.sh
-#RUN /var/local/bin/mariadbcreation.sh
-
 ENTRYPOINT ["/var/local/bin/mariadbcreation.sh"]

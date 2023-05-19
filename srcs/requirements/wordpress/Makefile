@@ -6,7 +6,7 @@ build:
 run:
 	@docker run -it -p 9000:9000 -d --name wordpress wordpress
 
-exec: build run
+exec:
 	@docker exec -ti wordpress bash
 
 stop:

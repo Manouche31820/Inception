@@ -10,10 +10,8 @@ RUN mv wp-cli.phar /usr/local/bin/wp
 RUN wp core download --allow-root
 COPY ./conf/php.ini /etc/php/7.3/
 RUN chmod 777 /etc/php/7.3/php.ini
-COPY ./tools/wordpressinstall.sh /tmp/
-RUN chmod 777 /tmp/wordpressinstall.sh
-COPY ./conf/my.cnf /tmp/
-COPY ./conf/wp-config.php /tmp/
-RUN chmod 777 /tmp/wp-config.php
+WORKDIR /tmp
+COPY ./tools/wordpressinstall.sh ./conf/my.cnf ./conf/wp-config.php  ./
+RUN chmod 777 ./wordpressinstall.sh ./my.cnf ./wp-config.php
 EXPOSE 9000
 ENTRYPOINT ["/tmp/wordpressinstall.sh"]
